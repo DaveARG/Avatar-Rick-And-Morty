@@ -49,6 +49,11 @@ Desde la **raíz del proyecto**, con una sola terminal:
 # Instalar dependencias en backend/ y frontend/
 pnpm install:all
 
+# ⚠️ OBLIGATORIO: Crear archivos .env (una sola vez tras clonar)
+# Los valores por defecto en .env.example ya funcionan para desarrollo local
+Copy-Item backend/.env.example backend/.env
+Copy-Item frontend/.env.example frontend/.env
+
 # Levantar backend + frontend simultáneamente con concurrently
 pnpm dev
 ```
@@ -57,6 +62,8 @@ pnpm dev
 - Frontend: `http://localhost:5173` (terminal magenta)
 
 **Nota:** Este comando ejecuta `pnpm --dir backend dev` + `pnpm --dir frontend dev` en paralelo. Todos los comandos principales (`dev`, `test`, `build`, `lint`, `format`) se pueden ejecutar desde la raíz.
+
+**⚠️ Importante:** Sin los archivos `.env`, el backend y frontend fallan al arrancar (validación fail-fast obligatoria). Ver [Variables de entorno](#-variables-de-entorno) para detalles.
 
 ---
 
@@ -88,7 +95,7 @@ Levanta en `http://localhost:5173`.
 
 ## 🌍 Variables de entorno
 
-Copiar `.env.example` a `.env` en cada carpeta y ajustar según necesidad.
+Copiar `.env.example` a `.env` en cada carpeta y ajustar según necesidad. Este paso es **obligatorio** — ver [Arranque rápido](#-arranque-rápido-recomendado) para las instrucciones.
 
 ### Backend (`.env`)
 
