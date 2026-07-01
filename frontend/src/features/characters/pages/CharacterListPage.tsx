@@ -2,41 +2,31 @@ import { useEffect, useState } from "react";
 import { SearchBar } from "../components/SearchBar";
 import { CharacterList } from "../components/CharacterList";
 import { Pagination } from "../components/Pagination";
+import { useCharacterSearch } from "../hooks/useCharacterSearch";
 import { useCharacterSearchParams } from "../hooks/useCharacterSearchParams";
 import { useDebounce } from "../hooks/useDebounce";
-import { searchCharacters } from "../services/characters.service";
-import type { CharacterListResponse } from "../types";
 
 export function CharacterListPage() {
   const { name, page, setName, setPage } = useCharacterSearchParams();
-  const debouncedName = useDebounce(name, 300);
 
-  const [data, setData] = useState<CharacterListResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Estado local del input: el tipeo es instantáneo y nunca se re-renderiza
+  // con un valor viejo mientras la URL (async, vía react-router) se pone al día.
+  const [inputValue, setInputValue] = useState(name);
+  const debouncedInputValue = useDebounce(inputValue, 300);
 
+  // Sync URL -> input: deep-link, "volver" del detalle, navegación por historial.
   useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    setError(null);
+    setInputValue(name);
+  }, [name]);
 
-    searchCharacters(debouncedName, page)
-      .then((response) => {
-        if (!cancelled) setData(response);
-      })
-      .catch((err: unknown) => {
-        if (!cancelled) {
-          setError(err instanceof Error ? err.message : "Error desconocido");
-        }
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
+  // Sync input -> URL (debounced): dispara la búsqueda y resetea page a 1.
+  useEffect(() => {
+    if (debouncedInputValue !== name) {
+      setName(debouncedInputValue);
+    }
+  }, [debouncedInputValue, name, setName]);
 
-    return () => {
-      cancelled = true;
-    };
-  }, [debouncedName, page]);
+  const { data, loading, error } = useCharacterSearch(name, page);
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-8">
@@ -44,19 +34,11 @@ export function CharacterListPage() {
         Rick and Morty Explorer
       </h1>
       <div className="mb-6">
-        <SearchBar value={name} onChange={setName} />
+        <SearchBar value={inputValue} onChange={setInputValue} />
       </div>
-      <CharacterList
-        characters={data?.results ?? []}
-        loading={loading}
-        error={error}
-      />
+      <CharacterList characters={data?.results ?? []} loading={loading} error={error} />
       {!loading && !error && (data?.info.pages ?? 0) > 0 && (
-        <Pagination
-          page={page}
-          totalPages={data?.info.pages ?? 0}
-          onPageChange={setPage}
-        />
+        <Pagination page={page} totalPages={data?.info.pages ?? 0} onPageChange={setPage} />
       )}
     </main>
   );

@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { useSearchParams } from "react-router";
 
 export interface CharacterSearchParams {
@@ -13,13 +14,19 @@ export function useCharacterSearchParams(): CharacterSearchParams {
   const name = searchParams.get("name") ?? "";
   const page = Number(searchParams.get("page")) || 1;
 
-  const setName = (newName: string) => {
-    setSearchParams({ name: newName, page: "1" });
-  };
+  const setName = useCallback(
+    (newName: string) => {
+      setSearchParams({ name: newName, page: "1" });
+    },
+    [setSearchParams],
+  );
 
-  const setPage = (newPage: number) => {
-    setSearchParams({ name, page: String(newPage) });
-  };
+  const setPage = useCallback(
+    (newPage: number) => {
+      setSearchParams({ name, page: String(newPage) });
+    },
+    [name, setSearchParams],
+  );
 
   return { name, page, setName, setPage };
 }

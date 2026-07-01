@@ -12,9 +12,7 @@ export function CharacterDetail({ character }: CharacterDetailProps) {
         alt={`Retrato de ${character.name}`}
         className="mx-auto h-48 w-48 rounded-full object-cover"
       />
-      <h1 className="mt-4 text-center text-2xl font-bold text-slate-900">
-        {character.name}
-      </h1>
+      <h1 className="mt-4 text-center text-2xl font-bold text-slate-900">{character.name}</h1>
       <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
         <dt className="font-medium text-slate-500">Estado</dt>
         <dd className="text-slate-900">{character.status}</dd>

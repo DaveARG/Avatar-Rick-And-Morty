@@ -13,15 +13,15 @@ export function CharacterList({ characters, loading, error }: CharacterListProps
   }
 
   if (error) {
-    return <p className="py-8 text-center text-red-600">Error: {error}</p>;
+    return (
+      <p role="alert" className="py-8 text-center text-red-600">
+        Error: {error}
+      </p>
+    );
   }
 
   if (characters.length === 0) {
-    return (
-      <p className="py-8 text-center text-slate-500">
-        No se encontraron personajes.
-      </p>
-    );
+    return <p className="py-8 text-center text-slate-500">No se encontraron personajes.</p>;
   }
 
   return (
