@@ -12,6 +12,12 @@ dist
 dist-ssr
 *.local
 
+# Playwright
+/e2e/test-results
+/e2e/playwright-report
+/e2e/blob-report
+/e2e/playwright/.cache
+
 # Env vars (nunca commitear .env real — solo .env.example)
 .env
 .env.local
