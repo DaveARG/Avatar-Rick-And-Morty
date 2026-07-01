@@ -29,11 +29,22 @@ export function CharacterListPage() {
   const { data, loading, error } = useCharacterSearch(name, page);
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-8">
-      <h1 className="mb-6 text-center text-3xl font-bold text-slate-900">
+    <main className="mx-auto max-w-5xl px-4 py-10 sm:py-14">
+      <h1
+        className="mb-2 text-center font-display text-3xl font-black tracking-wide drop-shadow-[0_0_18px_rgba(151,206,76,0.5)] sm:text-5xl"
+        style={{
+          background: "linear-gradient(90deg, #97ce4c, #5fe0f5)",
+          WebkitBackgroundClip: "text",
+          backgroundClip: "text",
+          color: "transparent",
+        }}
+      >
         Rick and Morty Explorer
       </h1>
-      <div className="mb-6">
+      <p className="mb-8 text-center text-sm text-slate-400 sm:text-base">
+        Cruza el portal y encuentra a tu personaje favorito del multiverso.
+      </p>
+      <div className="mx-auto mb-8 max-w-lg">
         <SearchBar value={inputValue} onChange={setInputValue} />
       </div>
       <CharacterList characters={data?.results ?? []} loading={loading} error={error} />
