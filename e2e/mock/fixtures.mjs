@@ -2,7 +2,7 @@
 // Contrato confirmado leyendo backend/src/types/character.types.ts y
 // backend/src/services/rickAndMorty.service.ts (paths reales: /character?page=&name=, /character/:id).
 //
-// ponytail: .mjs plano en vez de .ts — el webServer.command de Playwright corre
+// .mjs plano en vez de .ts — el webServer.command de Playwright corre
 // como proceso de shell aparte (no pasa por el transform de esbuild de Playwright),
 // y e2e/package.json no tiene "type": "module", así que .ts requeriría el flag
 // experimental --experimental-strip-types de Node. JS puro evita eso sin dependencias.

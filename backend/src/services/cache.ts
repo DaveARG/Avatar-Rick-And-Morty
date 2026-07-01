@@ -1,5 +1,5 @@
 // Cache en memoria con TTL y límite de entradas (evicción del más viejo al superar el máximo).
-// ponytail: Map simple en vez de lru-cache — el proceso es de un solo nodo, sin persistencia
+// Map simple en vez de lru-cache — el proceso es de un solo nodo, sin persistencia
 // entre requests concurrentes que justifique una librería. Si el proyecto escala a multi-instancia
 // o necesita LRU real (no solo insertion-order), migrar a lru-cache.
 

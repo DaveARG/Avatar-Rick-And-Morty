@@ -1,6 +1,6 @@
 import { defineConfig } from "@playwright/test";
 
-// ponytail: smoke minimo, sin proyectos multi-browser. Solo chromium.
+// Smoke minimo, sin proyectos multi-browser. Solo chromium.
 export default defineConfig({
   testDir: "./tests",
   fullyParallel: false,
@@ -16,7 +16,7 @@ export default defineConfig({
   projects: [{ name: "chromium", use: { browserName: "chromium" } }],
   webServer: [
     {
-      // ponytail: mock nativo (node:http, sin deps nuevas) del upstream real.
+      // Mock nativo (node:http, sin deps nuevas) del upstream real.
       // rickandmortyapi.com está detrás de Cloudflare con rate-limiting; bajo
       // carga a veces responde HTML de challenge y el backend lo traduce a un
       // 500 genérico, rompiendo el test de "sin resultados" de forma intermitente.

@@ -1,6 +1,6 @@
 // Mock mínimo del upstream real (rickandmortyapi.com) para el e2e.
 //
-// ponytail: el e2e original pegaba directo a rickandmortyapi.com. Ese servicio
+// El e2e original pegaba directo a rickandmortyapi.com. Ese servicio
 // está detrás de Cloudflare con rate-limiting y bajo carga a veces devuelve HTML
 // de challenge en vez de JSON -- el backend lo propaga como 500 genérico
 // ("Upstream service unavailable"), rompiendo el test de "sin resultados"

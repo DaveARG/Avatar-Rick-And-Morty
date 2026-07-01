@@ -11,7 +11,7 @@ interface UpstreamResult {
   body: unknown;
 }
 
-// ponytail: una sola cache compartida para list + byId, la key incluye el prefijo
+// Una sola cache compartida para list + byId, la key incluye el prefijo
 // del path así que no hay colisión entre ambos endpoints.
 const cache = new TtlCache<UpstreamResult>(CACHE_TTL_MS, CACHE_MAX_ENTRIES);
 
@@ -31,7 +31,7 @@ async function upstreamFetch(path: string): Promise<UpstreamResult> {
     });
     let body: unknown;
     try {
-      // ponytail: sin chequeo de content-type — res.json() ya rechaza cualquier
+      // Sin chequeo de content-type — res.json() ya rechaza cualquier
       // body no-JSON (HTML de Cloudflare incluido) con el mismo efecto práctico.
       body = await res.json();
     } catch (parseErr) {

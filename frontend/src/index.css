@@ -47,7 +47,7 @@
 }
 
 /* ---------- Fondo espacial vivo ---------- */
-/* ponytail: fondo 100% CSS (gradientes + box-shadow "estrellas"), cero imágenes pesadas/con copyright */
+/* Fondo 100% CSS (gradientes + box-shadow "estrellas"), cero imágenes pesadas/con copyright */
 .rm-space-bg {
   position: fixed;
   inset: 0;
