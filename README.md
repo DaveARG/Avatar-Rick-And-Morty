@@ -92,18 +92,22 @@ Copiar `.env.example` a `.env` en cada carpeta y ajustar según necesidad.
 
 ### Backend (`.env`)
 
-| Variable               | Default                           | Descripción                            |
-| ---------------------- | --------------------------------- | -------------------------------------- |
-| `PORT`                 | `3001`                            | Puerto del servidor Express            |
-| `CORS_ORIGIN`          | `http://localhost:5173`           | Origin permitido para CORS (frontend)  |
-| `UPSTREAM_BASE_URL`    | `https://rickandmortyapi.com/api` | Base URL de la API pública             |
-| `RATE_LIMIT_MAX`       | `100`                             | Máximo de requests por ventana         |
-| `RATE_LIMIT_WINDOW_MS` | `60000`                           | Ventana de tiempo (ms) para rate-limit |
+**Obligatorias** — el backend valida estas variables al arrancar y **falla rápido** (no levanta el servidor) con un mensaje claro si faltan, están vacías, o no son URLs válidas: `UPSTREAM_BASE_URL`, `CORS_ORIGIN`.
+
+**Opcionales** — tienen valor por defecto si no se definen:
+
+| Variable               | Default  | Descripción                            |
+| ---------------------- | -------- | --------------------------------------- |
+| `PORT`                 | `3001`   | Puerto del servidor Express            |
+| `RATE_LIMIT_MAX`       | `100`    | Máximo de requests por ventana         |
+| `RATE_LIMIT_WINDOW_MS` | `60000`  | Ventana de tiempo (ms) para rate-limit |
 
 ### Frontend (`.env`)
 
-| Variable       | Default                 | Descripción            |
-| -------------- | ----------------------- | ---------------------- |
+**Obligatoria** — el frontend falla al cargar con un mensaje claro si falta o está vacía: `VITE_API_URL`.
+
+| Variable       | Ejemplo                 | Descripción            |
+| -------------- | ------------------------ | ---------------------- |
 | `VITE_API_URL` | `http://localhost:3001` | URL del backend propio |
 
 ---

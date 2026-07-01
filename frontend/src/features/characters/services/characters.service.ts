@@ -1,6 +1,9 @@
 import type { ApiError, Character, CharacterListResponse } from "../types";
 
 const API_URL = import.meta.env.VITE_API_URL;
+if (API_URL === undefined || API_URL === "") {
+  throw new Error("VITE_API_URL is not defined. Copy .env.example to .env.");
+}
 
 export class HttpError extends Error {
   readonly status: number;

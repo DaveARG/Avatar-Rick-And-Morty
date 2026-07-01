@@ -1,7 +1,8 @@
+import { config } from "../config.js";
 import { UpstreamError } from "../middlewares/errorHandler.js";
 import { TtlCache } from "./cache.js";
 
-const UPSTREAM_BASE_URL = process.env.UPSTREAM_BASE_URL;
+const UPSTREAM_BASE_URL = config.upstreamBaseUrl;
 const TIMEOUT_MS = 8000;
 const CACHE_TTL_MS = 5 * 60 * 1000;
 const CACHE_MAX_ENTRIES = 500;
