@@ -1,32 +1,8 @@
 import { Router } from "express";
-import {
-  fetchCharacterById,
-  fetchCharacterList,
-} from "../services/rickAndMorty.service.js";
+import { fetchCharacterById, fetchCharacterList } from "../services/rickAndMorty.service.js";
 import { NotFoundError, ValidationError } from "../middlewares/errorHandler.js";
 import type { CharacterListResponse } from "../types/character.types.js";
-
-function validatePage(raw: unknown): number | null {
-  if (raw === undefined) return 1;
-  if (typeof raw !== "string" || !/^\d+$/.test(raw)) return null; // rechaza "0x10", "1e3", " 5 ", etc.
-  const n = Number(raw);
-  if (!Number.isSafeInteger(n) || n < 1) return null;
-  return n;
-}
-
-function validateName(raw: unknown): string | null {
-  if (raw === undefined) return ""; // ausente = sin filtro
-  if (typeof raw !== "string") return ""; // defensivo, edge case de query parsing
-  if (raw.length > 100) return null;
-  return raw; // incluye "" vacío = sin filtro
-}
-
-function validateId(raw: unknown): number | null {
-  if (typeof raw !== "string" || !/^\d+$/.test(raw)) return null; // cubre "abc", "-1", "1.5", "", "0x10", "1e3"
-  const n = Number(raw);
-  if (!Number.isSafeInteger(n) || n <= 0) return null;
-  return n;
-}
+import { validateId, validateName, validatePage } from "../validators/characters.validators.js";
 
 export const charactersRouter = Router();
 

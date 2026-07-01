@@ -2,6 +2,7 @@ import express from "express";
 import request from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createApp } from "../app.js";
+import { clearUpstreamCache } from "../services/rickAndMorty.service.js";
 import type { Character, CharacterListResponse } from "../types/character.types.js";
 
 const mockCharacter: Character = {
@@ -25,13 +26,22 @@ const mockListResponse: CharacterListResponse = {
 };
 
 function mockUpstream(status: number, body: unknown) {
-  vi.spyOn(global, "fetch").mockResolvedValueOnce(
-    new Response(JSON.stringify(body), { status })
-  );
+  vi.spyOn(global, "fetch").mockResolvedValueOnce(new Response(JSON.stringify(body), { status }));
 }
 
 function mockUpstreamFailure() {
   vi.spyOn(global, "fetch").mockRejectedValueOnce(new Error("network down"));
+}
+
+function mockUpstreamNonJson() {
+  // Simula la página HTML de rate-limit/challenge que devuelve Cloudflare
+  // delante de rickandmortyapi.com bajo carga.
+  vi.spyOn(global, "fetch").mockResolvedValueOnce(
+    new Response("<!doctype html><html><body>Rate limited</body></html>", {
+      status: 200,
+      headers: { "content-type": "text/html" },
+    }),
+  );
 }
 
 let app: express.Express;
@@ -39,6 +49,7 @@ let app: express.Express;
 beforeEach(() => {
   app = createApp();
   vi.restoreAllMocks();
+  clearUpstreamCache(); // evita que un hit de una request previa esconda el fetch mockeado del test actual
 });
 
 describe("GET /characters", () => {
@@ -139,6 +150,16 @@ describe("GET /characters", () => {
     expect(res.body).toEqual({ error: "Upstream service unavailable" });
     expect(JSON.stringify(res.body)).not.toMatch(/network down|stack/i);
   });
+
+  it("upstream devuelve HTML no-JSON (Cloudflare rate-limit/challenge) -> 500 sin filtrar el HTML", async () => {
+    mockUpstreamNonJson();
+
+    const res = await request(app).get("/characters?name=rick");
+
+    expect(res.status).toBe(500);
+    expect(res.body).toEqual({ error: "Upstream service unavailable" });
+    expect(JSON.stringify(res.body)).not.toMatch(/doctype|html|Rate limited/i);
+  });
 });
 
 describe("GET /characters/:id", () => {
@@ -198,5 +219,54 @@ describe("rutas no encontradas", () => {
 
     expect(res.status).toBe(404);
     expect(res.body).toEqual({ error: "Not found" });
+  });
+});
+
+describe("cache de respuestas del upstream", () => {
+  it("un segundo request idéntico a /characters no vuelve a llamar al fetch (cache hit)", async () => {
+    const fetchSpy = vi
+      .spyOn(global, "fetch")
+      .mockResolvedValueOnce(new Response(JSON.stringify(mockListResponse), { status: 200 }));
+
+    const first = await request(app).get("/characters?name=rick&page=1");
+    const second = await request(app).get("/characters?name=rick&page=1");
+
+    expect(first.status).toBe(200);
+    expect(second.status).toBe(200);
+    expect(second.body).toEqual(first.body);
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("un segundo request idéntico a /characters/:id no vuelve a llamar al fetch (cache hit)", async () => {
+    const fetchSpy = vi
+      .spyOn(global, "fetch")
+      .mockResolvedValueOnce(new Response(JSON.stringify(mockCharacter), { status: 200 }));
+
+    const first = await request(app).get("/characters/1");
+    const second = await request(app).get("/characters/1");
+
+    expect(first.status).toBe(200);
+    expect(second.status).toBe(200);
+    expect(second.body).toEqual(first.body);
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("rate limiting", () => {
+  it("al exceder el límite configurado devuelve 429 con contrato JSON {error}", async () => {
+    process.env.RATE_LIMIT_MAX = "1";
+    process.env.RATE_LIMIT_WINDOW_MS = "60000";
+    const limitedApp = createApp();
+    mockUpstream(200, mockListResponse);
+    mockUpstream(200, mockListResponse);
+    delete process.env.RATE_LIMIT_MAX;
+    delete process.env.RATE_LIMIT_WINDOW_MS;
+
+    const first = await request(limitedApp).get("/characters");
+    const second = await request(limitedApp).get("/characters");
+
+    expect(first.status).toBe(200);
+    expect(second.status).toBe(429);
+    expect(second.body).toEqual({ error: "Too many requests" });
   });
 });
